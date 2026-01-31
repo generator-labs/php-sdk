@@ -83,7 +83,7 @@ try {
         'port' => 443,
         'protocol' => 'https',
         'cert_profile' => $profileId,
-        'contact_group' => 'CG37106c6baa1ec90a2b3f5c8ec54afe9d'  // Use your contact group ID
+        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'  // Use your contact group ID
     ]);
     echo "Created HTTPS monitor ID: {$httpsMonitor['monitor']['id']}\n";
     $httpsMonitorId = $httpsMonitor['monitor']['id'];
@@ -96,7 +96,7 @@ try {
         'port' => 465,
         'protocol' => 'smtps',
         'cert_profile' => $profileId,
-        'contact_group' => 'CG37106c6baa1ec90a2b3f5c8ec54afe9d'
+        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
     ]);
     echo "Created SMTPS monitor ID: {$smtpsMonitor['monitor']['id']}\n";
     $smtpsMonitorId = $smtpsMonitor['monitor']['id'];

@@ -12,30 +12,30 @@ try {
     $hosts = $client->rbl->hosts->get(['page_size' => 10]);
 
     // Get a single host
-    $host = $client->rbl->hosts->get('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $host = $client->rbl->hosts->get('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     // Create a host
     $newHost = $client->rbl->hosts->create([
         'name' => 'My Mail Server',
         'host' => '192.168.1.100',
         'type' => 'rbl',
-        'rbl_profile' => 'RP15d4e891d784977cacbfcbb00c48f133',
-        'contact_group' => 'CG37106c6baa1ec90a2b3f5c8ec54afe9d'
+        'rbl_profile' => 'RP9f8e7d6c5b4a3210fedcba0987654321',
+        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
     ]);
 
     // Update a host
-    $client->rbl->hosts->update('HTee06c4fa7c23aa8a3a4e8d66922b0834', [
+    $client->rbl->hosts->update('HT1a2b3c4d5e6f7890abcdef1234567890', [
         'name' => 'Updated Server Name'
     ]);
 
     // Pause a host
-    $client->rbl->hosts->pause('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $client->rbl->hosts->pause('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     // Resume a host
-    $client->rbl->hosts->resume('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $client->rbl->hosts->resume('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     // Delete a host
-    $client->rbl->hosts->delete('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $client->rbl->hosts->delete('HT1a2b3c4d5e6f7890abcdef1234567890');
 
 
     // ===== RBL Check =====
@@ -65,7 +65,7 @@ try {
     $profiles = $client->rbl->profiles->get();
 
     // Get a single profile
-    $profile = $client->rbl->profiles->get('RP15d4e891d784977cacbfcbb00c48f133');
+    $profile = $client->rbl->profiles->get('RP9f8e7d6c5b4a3210fedcba0987654321');
 
     // Create a profile
     $newProfile = $client->rbl->profiles->create([
@@ -74,12 +74,12 @@ try {
     ]);
 
     // Update a profile
-    $client->rbl->profiles->update('RP15d4e891d784977cacbfcbb00c48f133', [
+    $client->rbl->profiles->update('RP9f8e7d6c5b4a3210fedcba0987654321', [
         'name' => 'Updated Profile Name'
     ]);
 
     // Delete a profile
-    $client->rbl->profiles->delete('RP15d4e891d784977cacbfcbb00c48f133');
+    $client->rbl->profiles->delete('RP9f8e7d6c5b4a3210fedcba0987654321');
 
 
     // ===== Sources =====
@@ -117,7 +117,7 @@ try {
     $contacts = $client->contact->contacts->get();
 
     // Get a single contact
-    $contact = $client->contact->contacts->get('CT1234567890abcdef');
+    $contact = $client->contact->contacts->get('COabcdef1234567890abcdef1234567890');
 
     // Create a contact
     $newContact = $client->contact->contacts->create([
@@ -126,26 +126,26 @@ try {
     ]);
 
     // Update a contact
-    $client->contact->contacts->update('CT1234567890abcdef', [
+    $client->contact->contacts->update('COabcdef1234567890abcdef1234567890', [
         'email' => 'updated@example.com'
     ]);
 
     // Pause a contact
-    $client->contact->contacts->pause('CT1234567890abcdef');
+    $client->contact->contacts->pause('COabcdef1234567890abcdef1234567890');
 
     // Resume a contact
-    $client->contact->contacts->resume('CT1234567890abcdef');
+    $client->contact->contacts->resume('COabcdef1234567890abcdef1234567890');
 
     // Confirm a contact
-    $client->contact->contacts->confirm('CT1234567890abcdef', [
+    $client->contact->contacts->confirm('COabcdef1234567890abcdef1234567890', [
         'authcode' => '123456'
     ]);
 
     // Resend confirmation
-    $client->contact->contacts->resend('CT1234567890abcdef');
+    $client->contact->contacts->resend('COabcdef1234567890abcdef1234567890');
 
     // Delete a contact
-    $client->contact->contacts->delete('CT1234567890abcdef');
+    $client->contact->contacts->delete('COabcdef1234567890abcdef1234567890');
 
 
     // ===== Contact Groups =====
@@ -154,7 +154,7 @@ try {
     $groups = $client->contact->groups->get();
 
     // Get a single group
-    $group = $client->contact->groups->get('CG37106c6baa1ec90a2b3f5c8ec54afe9d');
+    $group = $client->contact->groups->get('CG4f3e2d1c0b9a8776655443322110fed');
 
     // Create a group
     $newGroup = $client->contact->groups->create([
@@ -163,12 +163,12 @@ try {
     ]);
 
     // Update a group
-    $client->contact->groups->update('CG37106c6baa1ec90a2b3f5c8ec54afe9d', [
+    $client->contact->groups->update('CG4f3e2d1c0b9a8776655443322110fed', [
         'name' => 'Updated Group Name'
     ]);
 
     // Delete a group
-    $client->contact->groups->delete('CG37106c6baa1ec90a2b3f5c8ec54afe9d');
+    $client->contact->groups->delete('CG4f3e2d1c0b9a8776655443322110fed');
 
 } catch (GeneratorLabs\Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";

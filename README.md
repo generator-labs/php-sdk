@@ -84,7 +84,7 @@ try {
 
 ```php
 try {
-    $host = $client->rbl->hosts->get('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $host = $client->rbl->hosts->get('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     print_r($host);
 
@@ -101,8 +101,8 @@ try {
         'name' => 'My Mail Server',
         'host' => '192.168.1.100',
         'type' => 'rbl',
-        'rbl_profile' => 'RP15d4e891d784977cacbfcbb00c48f133',
-        'contact_group' => 'CG37106c6baa1ec90a2b3f5c8ec54afe9d'
+        'rbl_profile' => 'RP9f8e7d6c5b4a3210fedcba0987654321',
+        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
     ]);
 
     print_r($result);
@@ -116,7 +116,7 @@ try {
 
 ```php
 try {
-    $result = $client->rbl->hosts->update('HTee06c4fa7c23aa8a3a4e8d66922b0834', [
+    $result = $client->rbl->hosts->update('HT1a2b3c4d5e6f7890abcdef1234567890', [
         'name' => 'Updated Mail Server Name'
     ]);
 
@@ -131,7 +131,7 @@ try {
 
 ```php
 try {
-    $result = $client->rbl->hosts->delete('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $result = $client->rbl->hosts->delete('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     print_r($result);
 
@@ -145,10 +145,10 @@ try {
 ```php
 try {
     // Pause monitoring
-    $client->rbl->hosts->pause('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $client->rbl->hosts->pause('HT1a2b3c4d5e6f7890abcdef1234567890');
 
     // Resume monitoring
-    $client->rbl->hosts->resume('HTee06c4fa7c23aa8a3a4e8d66922b0834');
+    $client->rbl->hosts->resume('HT1a2b3c4d5e6f7890abcdef1234567890');
 
 } catch(GeneratorLabs\Exception $e) {
     echo $e->getMessage();
@@ -191,17 +191,17 @@ try {
     ]);
 
     // Update a contact
-    $client->contact->contacts->update('CT1234567890abcdef', [
+    $client->contact->contacts->update('COabcdef1234567890abcdef1234567890', [
         'email' => 'updated@example.com'
     ]);
 
     // Confirm a contact
-    $client->contact->contacts->confirm('CT1234567890abcdef', [
+    $client->contact->contacts->confirm('COabcdef1234567890abcdef1234567890', [
         'authcode' => '123456'
     ]);
 
     // Delete a contact
-    $client->contact->contacts->delete('CT1234567890abcdef');
+    $client->contact->contacts->delete('COabcdef1234567890abcdef1234567890');
 
 } catch(GeneratorLabs\Exception $e) {
     echo $e->getMessage();
@@ -222,12 +222,12 @@ try {
     ]);
 
     // Update a contact group
-    $client->contact->groups->update('CG1234567890abcdef', [
+    $client->contact->groups->update('CG4f3e2d1c0b9a8776655443322110fed', [
         'name' => 'Updated Group Name'
     ]);
 
     // Delete a contact group
-    $client->contact->groups->delete('CG1234567890abcdef');
+    $client->contact->groups->delete('CG4f3e2d1c0b9a8776655443322110fed');
 
 } catch(GeneratorLabs\Exception $e) {
     echo $e->getMessage();
@@ -246,7 +246,7 @@ try {
     $errors = $client->cert->errors->get();
 
     // Get a specific error by ID
-    $error = $client->cert->errors->get('CE1234567890abcdef');
+    $error = $client->cert->errors->get('CE5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a');
 
     print_r($errors);
 
@@ -263,7 +263,7 @@ try {
     $monitors = $client->cert->monitors->get();
 
     // Get a specific monitor
-    $monitor = $client->cert->monitors->get('CM1234567890abcdef');
+    $monitor = $client->cert->monitors->get('CM62944aeeee2b46d7a28221164f38976a');
 
     // Create a new certificate monitor
     $monitor = $client->cert->monitors->create([
@@ -271,23 +271,23 @@ try {
         'hostname' => 'example.com',
         'port' => 443,
         'protocol' => 'https',
-        'cert_profile' => 'CP1234567890abcdef',
-        'contact_group' => 'CG1234567890abcdef'
+        'cert_profile' => 'CP79b597e61a984a35b5eb7dcdbc3de53c',
+        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
     ]);
 
     // Update a monitor
-    $monitor = $client->cert->monitors->update('CM1234567890abcdef', [
+    $monitor = $client->cert->monitors->update('CM62944aeeee2b46d7a28221164f38976a', [
         'name' => 'Updated Server Name'
     ]);
 
     // Delete a monitor
-    $client->cert->monitors->delete('CM1234567890abcdef');
+    $client->cert->monitors->delete('CM62944aeeee2b46d7a28221164f38976a');
 
     // Pause monitoring
-    $client->cert->monitors->pause('CM1234567890abcdef');
+    $client->cert->monitors->pause('CM62944aeeee2b46d7a28221164f38976a');
 
     // Resume monitoring
-    $client->cert->monitors->resume('CM1234567890abcdef');
+    $client->cert->monitors->resume('CM62944aeeee2b46d7a28221164f38976a');
 
 } catch(GeneratorLabs\Exception $e) {
     echo $e->getMessage();
@@ -302,7 +302,7 @@ try {
     $profiles = $client->cert->profiles->get();
 
     // Get a specific profile
-    $profile = $client->cert->profiles->get('CP1234567890abcdef');
+    $profile = $client->cert->profiles->get('CP79b597e61a984a35b5eb7dcdbc3de53c');
 
     // Create a new profile
     $profile = $client->cert->profiles->create([
@@ -312,12 +312,12 @@ try {
     ]);
 
     // Update a profile
-    $profile = $client->cert->profiles->update('CP1234567890abcdef', [
+    $profile = $client->cert->profiles->update('CP79b597e61a984a35b5eb7dcdbc3de53c', [
         'expiration_warning_days' => 45
     ]);
 
     // Delete a profile
-    $client->cert->profiles->delete('CP1234567890abcdef');
+    $client->cert->profiles->delete('CP79b597e61a984a35b5eb7dcdbc3de53c');
 
 } catch(GeneratorLabs\Exception $e) {
     echo $e->getMessage();
