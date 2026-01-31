@@ -12,10 +12,18 @@
 namespace GeneratorLabs\API;
 
 use GeneratorLabs\Exception;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 
 trait RequestHandler
 {
     private \GeneratorLabs\Client $m_client;
+    private ?GuzzleClient $http_client = null;
 
     //
     // init a new object
@@ -23,23 +31,85 @@ trait RequestHandler
     protected function init(\GeneratorLabs\Client $_client): void
     {
         $this->m_client = $_client;
+        $this->initHttpClient();
     }
 
     //
-    // build a request URL
+    // initialize Guzzle HTTP client with retry middleware
     //
-    private function build_url(string $_action, ?array $_args = null): string
+    private function initHttpClient(): void
     {
-        //
-        // if there were arguments passed in for GET requests
-        //
-        if (is_null($_args) == false)
-        {
-            return $this->m_client->url() . $_action . '.json' . '?' . http_build_query($_args);
-        } else
-        {
-            return $this->m_client->url() . $_action . '.json';
-        }
+        // Create handler stack with retry middleware
+        $handlerStack = HandlerStack::create();
+
+        // Add retry middleware
+        $handlerStack->push(Middleware::retry(
+            $this->retryDecider(),
+            $this->retryDelay()
+        ));
+
+        // Create Guzzle client with configuration
+        $this->http_client = new GuzzleClient([
+            'base_uri' => $this->m_client->url(),
+            'timeout' => 30.0,           // Request timeout
+            'connect_timeout' => 5.0,     // Connection timeout
+            'handler' => $handlerStack,
+            'auth' => [
+                $this->m_client->account_sid(),
+                $this->m_client->api_token()
+            ],
+            'headers' => [
+                'User-Agent' => 'GeneratorLabs-PHP/' . \GeneratorLabs\Client::VERSION,
+                'Accept' => 'application/json',
+            ],
+            'http_errors' => false,  // Handle errors manually
+        ]);
+    }
+
+    //
+    // decide whether to retry a request
+    //
+    private function retryDecider(): callable
+    {
+        return function (
+            int $retries,
+            Request $request,
+            ?Response $response = null,
+            ?\Throwable $exception = null
+        ): bool {
+            // Don't retry after 3 attempts
+            if ($retries >= 3) {
+                return false;
+            }
+
+            // Retry connection errors
+            if ($exception instanceof ConnectException) {
+                return true;
+            }
+
+            // Retry on 5xx server errors
+            if ($response && $response->getStatusCode() >= 500) {
+                return true;
+            }
+
+            // Retry on 429 Too Many Requests
+            if ($response && $response->getStatusCode() === 429) {
+                return true;
+            }
+
+            return false;
+        };
+    }
+
+    //
+    // calculate retry delay with exponential backoff
+    //
+    private function retryDelay(): callable
+    {
+        return function (int $numberOfRetries): int {
+            // Exponential backoff: 1000ms, 2000ms, 4000ms
+            return 1000 * (2 ** ($numberOfRetries - 1));
+        };
     }
 
     //
@@ -47,168 +117,71 @@ trait RequestHandler
     //
     private function request(string $_type, string $_action, ?array $_args = null): array
     {
-        $response = '';
+        $url = $_action . '.json';
 
-        //
-        // if CURL exists, use it- it's faster
-        //
-        if (function_exists('curl_version') == true)
-        {
-            //
-            // set up CURL
-            //
-            $c = curl_init();
+        try {
+            $options = [];
 
-            if (in_array($_type, ['POST', 'PUT', 'DELETE']))
-            {
-                curl_setopt($c, CURLOPT_URL, $this->build_url($_action));
-                curl_setopt($c, CURLOPT_CUSTOMREQUEST, $_type);
-
-                //
-                // build headers
-                //
-                $headers = [
-                    'Content-type'  => 'application/x-www-form-urlencoded'
-                ];
-
-                //
-                // if there are args
-                //
-                if (is_null($_args) == false)
-                {
-                    curl_setopt($c, CURLOPT_POSTFIELDS, http_build_query($_args));
-                } else
-                {
-                    //
-                    // set content-length to 0 if there's no data
-                    //
-                    $headers['Content-Length'] = 0;
-                }
-
-                //
-                // add the custom headers
-                //
-                curl_setopt($c, CURLOPT_HTTPHEADER, $headers);
-
-            } else
-            {
-                curl_setopt($c, CURLOPT_URL, $this->build_url($_action, $_args));
+            // Handle request based on method
+            if ($_type === 'GET' && !is_null($_args)) {
+                $options['query'] = $_args;
+            } elseif (in_array($_type, ['POST', 'PUT', 'DELETE']) && !is_null($_args)) {
+                $options['form_params'] = $_args;
             }
 
-            curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($c, CURLOPT_USERPWD, $this->m_client->account_sid() . ':' . $this->m_client->api_token());
+            // Make the request
+            $response = $this->http_client->request($_type, $url, $options);
 
-            //
-            // add additional custom CURL opts
-            //
-            if (count($this->m_client->m_curl_opts) > 0)
-            {
-                curl_setopt_array($c, $this->m_client->m_curl_opts);
+            // Get response body
+            $body = (string) $response->getBody();
+
+            // Check for empty response
+            if (empty($body)) {
+                throw new Exception('Empty response from Generator Labs API');
             }
 
-            //
-            // make the request
-            //
-            $response  = curl_exec($c);
-
-            //
-            // shutdown CURL
-            //
-            curl_close($c);
-
-            //
-            // validate the response data
-            //
-            if ( ($response === false) || (strlen(strval($response)) == 0) )
-            {
-                throw new Exception('failed to make request to Generator Labs API');
+            // Decode JSON
+            $data = json_decode($body, true);
+            if (is_null($data)) {
+                throw new Exception('Failed to decode JSON response from Generator Labs API');
             }
 
-        //
-        // otherwise, just use file_get_contents()
-        //
-        } else
-        {
-            //
-            // POST/PUT/DELETE request
-            //
-            if (in_array($_type, ['POST', 'PUT', 'DELETE']))
-            {
-                //
-                // build the opts
-                //
-                $opts = [ 'http' => [
+            // Check for API errors (v4.0 format)
+            if (isset($data['success']) && $data['success'] === false) {
+                $message = $data['error']['message'] ?? $data['message'] ?? 'Unknown error';
+                throw new Exception('Generator Labs API error: ' . $message);
+            }
 
-                        'method'    => $_type,
-                        'header'    => [
+            // Check HTTP status code
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 400) {
+                $message = $data['error']['message'] ?? $data['message'] ?? "HTTP {$statusCode} error";
+                throw new Exception('Generator Labs API error: ' . $message);
+            }
 
-                            'Content-type: application/x-www-form-urlencoded',
-                            'Authorization: Basic ' . base64_encode($this->m_client->account_sid() . ':' . $this->m_client->api_token())
-                        ],
-                        'content'   => (is_null($_args) == true) ? '' : http_build_query($_args),
-                    ]
-                ];
+            return $data;
 
-                //
-                // make the request
-                //
-                $response = file_get_contents($this->build_url($_action), false, stream_context_create($opts));
-
-                if ( ($response === false) || (strlen($response) == 0) )
-                {
-                    throw new Exception('failed to make request to Generator Labs API');
-                }
-
-            //
-            // GET request
-            //
-            } else
-            {
-                //
-                // build the opts
-                //
-                $opts = [ 'http' => [
-
-                        'method'    => 'GET',
-                        'header'    => [
-
-                            'Authorization: Basic ' . base64_encode($this->m_client->account_sid() . ':' . $this->m_client->api_token())
-                        ]
-                    ]
-                ];
-
-                //
-                // make the request
-                //
-                $response = file_get_contents($this->build_url($_action, $_args), false, stream_context_create($opts));
-
-                if ( ($response === false) || (strlen($response) == 0) )
-                {
-                    throw new Exception('failed to make request to Generator Labs API');
+        } catch (RequestException $e) {
+            // Guzzle exception
+            $message = $e->getMessage();
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+                $body = (string) $response->getBody();
+                $data = json_decode($body, true);
+                if ($data && isset($data['error']['message'])) {
+                    $message = $data['error']['message'];
+                } elseif ($data && isset($data['message'])) {
+                    $message = $data['message'];
                 }
             }
-        }
+            throw new Exception('Generator Labs API request failed: ' . $message);
 
-        //
-        // json decode it
-        //
-        $data = json_decode(strval($response), true);
-        if (is_null($data) == true)
-        {
-            throw new Exception('failed to decode response from Generator Labs API');
+        } catch (\Exception $e) {
+            if ($e instanceof Exception) {
+                throw $e;
+            }
+            throw new Exception('Generator Labs API request failed: ' . $e->getMessage());
         }
-
-        //
-        // look for a positive response (v4.0 API uses 'success' field)
-        //
-        if ( (isset($data['success']) == false) || ($data['success'] !== true) )
-        {
-            $message = $data['message'] ?? $data['error']['message'] ?? 'Unknown error';
-            throw new Exception('Generator Labs API returned error: ' . $message);
-        }
-
-        return $data;
     }
 
     //
