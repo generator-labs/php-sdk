@@ -37,7 +37,17 @@ final class Client
     private string $m_url = 'https://api.generatorlabs.com/4.0/';
 
     //
-    // additional CURL opts
+    // configuration options
+    //
+    private array $m_config = [
+        'timeout' => 30.0,
+        'connect_timeout' => 5.0,
+        'max_retries' => 3,
+        'retry_backoff' => 1,
+    ];
+
+    //
+    // additional CURL opts (deprecated - use config instead)
     //
     public array $m_curl_opts = [];
 
@@ -50,7 +60,7 @@ final class Client
     //
     // init the object and set the API credentials
     //
-    public function __construct(string $_account_sid, string $_api_token)
+    public function __construct(string $_account_sid, string $_api_token, array $_config = [])
     {
         //
         // validate the credentials
@@ -66,6 +76,14 @@ final class Client
 
         $this->account_sid($_account_sid);
         $this->api_token($_api_token);
+
+        // Merge user config with defaults
+        $this->m_config = array_merge($this->m_config, $_config);
+
+        // Allow custom base URL
+        if (isset($_config['base_url'])) {
+            $this->url($_config['base_url']);
+        }
     }
 
     //
@@ -119,8 +137,16 @@ final class Client
         return null;
     }
 
+    public function config(?string $_key = null): mixed
+    {
+        if (is_null($_key)) {
+            return $this->m_config;
+        }
+        return $this->m_config[$_key] ?? null;
+    }
+
     //
-    // here to support adding additional custom curl opts
+    // here to support adding additional custom curl opts (deprecated)
     //
     public function curl_opts(?array $_opts = null): void
     {

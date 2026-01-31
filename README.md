@@ -1,6 +1,8 @@
 # Generator Labs PHP SDK
 
 [![Tests](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml)
+[![CodeQL](https://github.com/generator-labs/php-sdk/actions/workflows/codeql.yml/badge.svg)](https://github.com/generator-labs/php-sdk/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/generator-labs/php-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/generator-labs/php-sdk)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg)](https://phpstan.org/)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -10,12 +12,17 @@ The official PHP SDK for the [Generator Labs](https://generatorlabs.com) API v4.
 ## Features
 
 - Full support for Generator Labs API v4.0
+- Automatic retry logic with exponential backoff (configurable)
+- Configurable timeouts and retry behavior
+- Automatic pagination support for large result sets
 - RESTful endpoint design with proper HTTP verbs (GET, POST, PUT, DELETE)
 - RBL and DNSBL monitoring
 - Contact and contact group management
 - Manual RBL checks
 - Monitoring profiles and sources
-- Type-safe with PHP 8.0+ strict types
+- Type-safe with PHP 8.1+ strict types
+- PHPStan level 8 static analysis
+- Guzzle HTTP client with connection pooling
 - PSR-4 autoloading
 
 ## Prerequisites
@@ -25,8 +32,8 @@ Before using this library, you must have:
 * A Generator Labs account - [Sign up](https://portal.generatorlabs.com/signup/) or [Login](https://portal.generatorlabs.com/login/)
 * Valid API credentials (Account SID and Auth Token) from the [Portal](https://portal.generatorlabs.com/login/)
 * PHP >= 8.1
-* The PHP cURL extension
 * The PHP JSON extension
+* Guzzle HTTP client (automatically installed via Composer)
 
 ## Installation
 
@@ -45,7 +52,20 @@ composer require generatorlabs/sdk
 
 require 'vendor/autoload.php';
 
+// Basic initialization
 $client = new GeneratorLabs\Client('your_account_sid', 'your_auth_token');
+
+// With custom configuration
+$client = new GeneratorLabs\Client(
+    'your_account_sid',
+    'your_auth_token',
+    [
+        'timeout' => 45,          // Request timeout in seconds
+        'connect_timeout' => 10,  // Connection timeout in seconds
+        'max_retries' => 5,       // Maximum retry attempts
+        'retry_backoff' => 2      // Backoff multiplier (2x: 1s, 2s, 4s, 8s, 16s)
+    ]
+);
 ```
 
 ### List Hosts

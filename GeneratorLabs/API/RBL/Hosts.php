@@ -12,10 +12,12 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\API\PaginationTrait;
 
 final class Hosts
 {
     use RequestHandler;
+    use PaginationTrait;
 
     //
     // constructor to copy over the client reference
@@ -78,5 +80,13 @@ final class Hosts
     public function resume(string $_id): array
     {
         return $this->_post('rbl/hosts/' . $_id . '/resume');
+    }
+
+    //
+    // override to extract hosts from response
+    //
+    protected function getResourceName(): string
+    {
+        return 'hosts';
     }
 }

@@ -48,11 +48,15 @@ trait RequestHandler
             $this->retryDelay()
         ));
 
+        // Get configuration from client
+        $timeout = $this->m_client->config('timeout') ?? 30.0;
+        $connectTimeout = $this->m_client->config('connect_timeout') ?? 5.0;
+
         // Create Guzzle client with configuration
         $this->http_client = new GuzzleClient([
             'base_uri' => $this->m_client->url(),
-            'timeout' => 30.0,           // Request timeout
-            'connect_timeout' => 5.0,     // Connection timeout
+            'timeout' => $timeout,
+            'connect_timeout' => $connectTimeout,
             'handler' => $handlerStack,
             'auth' => [
                 $this->m_client->account_sid(),
@@ -71,14 +75,16 @@ trait RequestHandler
     //
     private function retryDecider(): callable
     {
+        $maxRetries = $this->m_client->config('max_retries') ?? 3;
+
         return function (
             int $retries,
             Request $request,
             ?Response $response = null,
             ?\Throwable $exception = null
-        ): bool {
-            // Don't retry after 3 attempts
-            if ($retries >= 3) {
+        ) use ($maxRetries): bool {
+            // Don't retry after max attempts
+            if ($retries >= $maxRetries) {
                 return false;
             }
 
@@ -106,9 +112,11 @@ trait RequestHandler
     //
     private function retryDelay(): callable
     {
-        return function (int $numberOfRetries): int {
-            // Exponential backoff: 1000ms, 2000ms, 4000ms
-            return 1000 * (2 ** ($numberOfRetries - 1));
+        $backoffFactor = $this->m_client->config('retry_backoff') ?? 1;
+
+        return function (int $numberOfRetries) use ($backoffFactor): int {
+            // Exponential backoff with configurable factor
+            return (int)(1000 * $backoffFactor * (2 ** ($numberOfRetries - 1)));
         };
     }
 
