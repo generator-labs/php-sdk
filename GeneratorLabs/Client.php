@@ -56,6 +56,7 @@ final class Client
     //
     private ?API\RBL $rbl = null;
     private ?API\Contact $contact = null;
+    private ?API\Cert $cert = null;
 
     //
     // init the object and set the API credentials
@@ -161,6 +162,7 @@ final class Client
         return match ($_name) {
             'rbl' => $this->rbl ?? ($this->rbl = new API\RBL($this)),
             'contact' => $this->contact ?? ($this->contact = new API\Contact($this)),
+            'cert' => $this->cert ?? ($this->cert = new API\Cert($this)),
             default => throw new Exception('invalid resource ' . $_name),
         };
     }
