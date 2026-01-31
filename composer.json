@@ -1,0 +1,43 @@
+{
+    "name": "generatorlabs/sdk",
+    "type": "library",
+    "description": "A PHP wrapper for the Generator Labs API",
+    "keywords": ["generatorlabs", "rbl", "dnsbl", "monitoring", "api"],
+    "homepage": "https://generatorlabs.com",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/generator-labs/php-sdk/issues",
+        "source": "https://github.com/generator-labs/php-sdk"
+    },
+    "authors": [
+        {
+            "name": "Generator Labs",
+            "email": "support@generatorlabs.com",
+            "homepage": "https://generatorlabs.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "phpstan/phpstan": "^1.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeneratorLabs\\": "GeneratorLabs/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GeneratorLabs\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "phpstan": "phpstan analyse GeneratorLabs --level=5"
+    }
+}

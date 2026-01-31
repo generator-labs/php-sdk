@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         executionOrder="depends,defects"
+         failOnRisky="true"
+         failOnWarning="true"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Generator Labs SDK Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <coverage includeUncoveredFiles="true"
+              processUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="true">
+        <include>
+            <directory suffix=".php">GeneratorLabs</directory>
+        </include>
+    </coverage>
+    <php>
+        <env name="GENERATOR_LABS_ACCOUNT_SID" value="AC12345678901234567890123456789012"/>
+        <env name="GENERATOR_LABS_AUTH_TOKEN" value="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"/>
+    </php>
+</phpunit>
