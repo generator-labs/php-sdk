@@ -41,6 +41,19 @@ When using this SDK:
 5. **Monitor rate limits** - Implement proper error handling for 429 responses
 6. **Secure credential storage** - Use secure vaults or environment variables for API credentials
 
+## Security Scanning
+
+This SDK uses:
+- **PHPStan Level 8** - Maximum static analysis for type safety and code quality
+- **Dependabot** - Automated dependency updates and vulnerability alerts
+- **Composer Audit** - Regular security audits of dependencies
+
+Run security checks locally:
+```bash
+composer audit              # Check for known vulnerabilities
+composer run-script phpstan # Run static analysis
+```
+
 ## Known Security Considerations
 
 - API credentials (account SID and auth token) are transmitted using HTTP Basic Authentication over HTTPS

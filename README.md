@@ -1,7 +1,6 @@
 # Generator Labs PHP SDK
 
 [![Tests](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml)
-[![CodeQL](https://github.com/generator-labs/php-sdk/actions/workflows/codeql.yml/badge.svg)](https://github.com/generator-labs/php-sdk/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/generator-labs/php-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/generator-labs/php-sdk)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg)](https://phpstan.org/)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg)](https://www.php.net/)
