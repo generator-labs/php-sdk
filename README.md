@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/generator-labs/php-sdk/actions/workflows/tests.yml)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg)](https://phpstan.org/)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.0-8892BF.svg)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-8892BF.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 The official PHP SDK for the [Generator Labs](https://generatorlabs.com) API v4.0.
@@ -24,7 +24,7 @@ Before using this library, you must have:
 
 * A Generator Labs account - [Sign up](https://portal.generatorlabs.com/signup/) or [Login](https://portal.generatorlabs.com/login/)
 * Valid API credentials (Account SID and Auth Token) from the [Portal](https://portal.generatorlabs.com/login/)
-* PHP >= 8.0
+* PHP >= 8.1
 * The PHP cURL extension
 * The PHP JSON extension
 
@@ -262,7 +262,7 @@ composer test && composer phpstan
 * Complete rewrite for Generator Labs API v4.0
 * RESTful endpoint design with proper HTTP verbs
 * Updated to use Generator Labs branding (formerly RBLTracker)
-* Minimum PHP version bumped to 8.0
+* Minimum PHP version bumped to 8.1
 * Added full PHPUnit test coverage
 * Added PHPStan static analysis
 * Added GitHub Actions CI/CD workflow
