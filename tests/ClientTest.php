@@ -67,6 +67,34 @@ final class ClientTest extends TestCase
         $this->assertInstanceOf(\GeneratorLabs\API\Contact::class, $client->contact);
     }
 
+    public function testCertResourceContainerIsAccessible(): void
+    {
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+
+        $this->assertInstanceOf(\GeneratorLabs\API\Cert::class, $client->cert);
+    }
+
+    public function testCertErrorsEndpointIsAccessible(): void
+    {
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+
+        $this->assertInstanceOf(\GeneratorLabs\API\Cert\Errors::class, $client->cert->errors);
+    }
+
+    public function testCertMonitorsEndpointIsAccessible(): void
+    {
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+
+        $this->assertInstanceOf(\GeneratorLabs\API\Cert\Monitors::class, $client->cert->monitors);
+    }
+
+    public function testCertProfilesEndpointIsAccessible(): void
+    {
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+
+        $this->assertInstanceOf(\GeneratorLabs\API\Cert\Profiles::class, $client->cert->profiles);
+    }
+
     public function testInvalidResourceThrowsException(): void
     {
         $client = new Client($this->validAccountSid, $this->validAuthToken);
