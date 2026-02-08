@@ -324,6 +324,39 @@ try {
 }
 ```
 
+## Webhook Verification
+
+The SDK includes a helper for verifying incoming webhook signatures. Each webhook is assigned a signing secret (available in the Portal), which is used to compute an HMAC-SHA256 signature sent with every request in the `X-Webhook-Signature` header.
+
+```php
+use GeneratorLabs\Webhook;
+use GeneratorLabs\Exception;
+
+$header = $_SERVER['HTTP_X_WEBHOOK_SIGNATURE'] ?? '';
+$body = file_get_contents('php://input');
+$secret = getenv('GENERATOR_LABS_WEBHOOK_SECRET');
+
+try {
+    $payload = Webhook::verify($body, $header, $secret);
+
+    // $payload is the decoded event data
+    echo $payload['event'];
+
+} catch (Exception $e) {
+    // Signature verification failed
+    http_response_code(403);
+}
+```
+
+The default timestamp tolerance is 5 minutes. You can customize it (in seconds), or pass `0` to disable:
+
+```php
+$payload = Webhook::verify($body, $header, $secret, 600);  // 10-minute tolerance
+$payload = Webhook::verify($body, $header, $secret, 0);    // disable timestamp check
+```
+
+See `examples/webhook-verification.php` for a complete example.
+
 ## API Documentation
 
 Full API documentation is available at the [Generator Labs Developer Site](https://docs.generatorlabs.com/api/v4/).
