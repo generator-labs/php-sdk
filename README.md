@@ -324,6 +324,39 @@ try {
 }
 ```
 
+## Pagination
+
+List endpoints return paginated results. You can manually pass `page` and `page_size` parameters, or use the `getAll()` helper to automatically fetch every page and return a flat array of all items:
+
+```php
+try {
+    // Get all hosts across all pages (default page_size: 100)
+    $allHosts = $client->rbl->hosts->getAll();
+
+    foreach ($allHosts as $host) {
+        echo $host['name'] . ' - ' . $host['host'] . "\n";
+    }
+
+    // With a custom page size
+    $allHosts = $client->rbl->hosts->getAll(['page_size' => 50]);
+
+} catch(GeneratorLabs\Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+The `getAll()` method is available on all list endpoints:
+
+- `$client->rbl->hosts->getAll()`
+- `$client->rbl->profiles->getAll()`
+- `$client->rbl->sources->getAll()`
+- `$client->rbl->listings->getAll()`
+- `$client->contact->contacts->getAll()`
+- `$client->contact->groups->getAll()`
+- `$client->cert->monitors->getAll()`
+- `$client->cert->profiles->getAll()`
+- `$client->cert->errors->getAll()`
+
 ## Webhook Verification
 
 The SDK includes a helper for verifying incoming webhook signatures. Each webhook is assigned a signing secret (available in the Portal), which is used to compute an HMAC-SHA256 signature sent with every request in the `X-Webhook-Signature` header.

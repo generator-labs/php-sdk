@@ -12,10 +12,12 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\API\PaginationTrait;
 
 final class Listings
 {
     use RequestHandler;
+    use PaginationTrait;
 
     //
     // constructor to copy over the client reference
@@ -31,5 +33,13 @@ final class Listings
     public function get(?array $_settings = null): array
     {
         return $this->_get('rbl/listings', $_settings);
+    }
+
+    //
+    // get the resource name for pagination
+    //
+    protected function getResourceName(): string
+    {
+        return 'listings';
     }
 }

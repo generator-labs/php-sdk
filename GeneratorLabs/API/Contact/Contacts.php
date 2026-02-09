@@ -12,10 +12,12 @@
 namespace GeneratorLabs\API\Contact;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\API\PaginationTrait;
 
 final class Contacts
 {
     use RequestHandler;
+    use PaginationTrait;
 
     //
     // constructor to copy over the client reference
@@ -90,5 +92,13 @@ final class Contacts
     public function resend(string $_id): array
     {
         return $this->_post('contact/contacts/' . $_id . '/resend');
+    }
+
+    //
+    // get the resource name for pagination
+    //
+    protected function getResourceName(): string
+    {
+        return 'contacts';
     }
 }

@@ -36,8 +36,8 @@ final class Check
     //
     // get the status of an RBL check
     //
-    public function status(string $_id): array
+    public function status(string $_id, ?array $_params = null): array
     {
-        return $this->_get('rbl/check/status/' . $_id);
+        return $this->_get('rbl/check/status/' . $_id, $_params);
     }
 }

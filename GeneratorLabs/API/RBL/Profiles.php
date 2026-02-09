@@ -12,10 +12,12 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\API\PaginationTrait;
 
 final class Profiles
 {
     use RequestHandler;
+    use PaginationTrait;
 
     //
     // constructor to copy over the client reference
@@ -58,5 +60,13 @@ final class Profiles
     public function delete(string $_id): array
     {
         return $this->_delete('rbl/profiles/' . $_id);
+    }
+
+    //
+    // get the resource name for pagination
+    //
+    protected function getResourceName(): string
+    {
+        return 'profiles';
     }
 }

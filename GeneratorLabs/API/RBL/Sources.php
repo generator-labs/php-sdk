@@ -12,10 +12,12 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\API\PaginationTrait;
 
 final class Sources
 {
     use RequestHandler;
+    use PaginationTrait;
 
     //
     // constructor to copy over the client reference
@@ -74,5 +76,13 @@ final class Sources
     public function resume(string $_id): array
     {
         return $this->_post('rbl/sources/' . $_id . '/resume');
+    }
+
+    //
+    // get the resource name for pagination
+    //
+    protected function getResourceName(): string
+    {
+        return 'sources';
     }
 }

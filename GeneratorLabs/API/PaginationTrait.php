@@ -37,10 +37,10 @@ trait PaginationTrait
             $allItems = array_merge($allItems, $items);
 
             // Check if there are more pages
-            $hasMore = $response['has_more'] ?? false;
+            $totalPages = $response['total_pages'] ?? 1;
             $page++;
 
-        } while ($hasMore);
+        } while ($page <= $totalPages);
 
         return $allItems;
     }
