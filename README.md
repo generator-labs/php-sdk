@@ -8,6 +8,38 @@
 
 The official PHP SDK for the [Generator Labs](https://generatorlabs.com) API v4.0.
 
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [RBL Monitoring](#rbl-monitoring)
+  - [List Hosts](#list-hosts)
+  - [Get a Single Host](#get-a-single-host)
+  - [Create a New Host](#create-a-new-host)
+  - [Update a Host](#update-a-host)
+  - [Delete a Host](#delete-a-host)
+  - [Pause/Resume a Host](#pauseresume-a-host)
+  - [Start a Manual RBL Check](#start-a-manual-rbl-check)
+  - [Manage RBL Profiles](#manage-rbl-profiles)
+  - [Manage RBL Sources](#manage-rbl-sources)
+- [Contact Management](#contact-management)
+  - [Manage Contacts](#manage-contacts)
+  - [Manage Contact Groups](#manage-contact-groups)
+- [Certificate Monitoring](#certificate-monitoring)
+  - [List Certificate Errors](#list-certificate-errors)
+  - [Manage Certificate Monitors](#manage-certificate-monitors)
+  - [Manage Certificate Profiles](#manage-certificate-profiles)
+- [Pagination](#pagination)
+- [Webhook Verification](#webhook-verification)
+- [API Structure](#api-structure)
+- [Development](#development)
+- [Release History](#release-history)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
+
 ## Features
 
 - Full support for Generator Labs API v4.0
@@ -67,6 +99,8 @@ $client = new GeneratorLabs\Client(
 );
 ```
 
+## RBL Monitoring
+
 ### List Hosts
 
 ```php
@@ -100,9 +134,12 @@ try {
     $result = $client->rbl->hosts->create([
         'name' => 'My Mail Server',
         'host' => '192.168.1.100',
-        'type' => 'rbl',
-        'rbl_profile' => 'RP9f8e7d6c5b4a3210fedcba0987654321',
-        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
+        'profile' => 'RP9f8e7d6c5b4a3210fedcba0987654321',
+        'contact_group' => [
+            'CG4f3e2d1c0b9a8776655443322110fedc',
+            'CG5a6b7c8d9e0f1234567890abcdef1234'
+        ],
+        'tags' => ['production', 'web']
     ]);
 
     print_r($result);
@@ -117,7 +154,8 @@ try {
 ```php
 try {
     $result = $client->rbl->hosts->update('HT1a2b3c4d5e6f7890abcdef1234567890', [
-        'name' => 'Updated Mail Server Name'
+        'name' => 'Updated Mail Server Name',
+        'tags' => ['production', 'web']
     ]);
 
     print_r($result);
@@ -177,6 +215,75 @@ try {
 }
 ```
 
+### Manage RBL Profiles
+
+```php
+try {
+    // List all profiles
+    $profiles = $client->rbl->profiles->get();
+
+    // Get a specific profile
+    $profile = $client->rbl->profiles->get('RP9f8e7d6c5b4a3210fedcba0987654321');
+
+    // Create a new profile
+    $result = $client->rbl->profiles->create([
+        'name' => 'My Custom Profile',
+        'entries' => [
+            'RB1234567890abcdef1234567890abcdef',
+            'RB0987654321fedcba0987654321fedcba'
+        ]
+    ]);
+
+    // Update a profile
+    $client->rbl->profiles->update('RP9f8e7d6c5b4a3210fedcba0987654321', [
+        'name' => 'Updated Profile Name',
+        'entries' => [
+            'RB1234567890abcdef1234567890abcdef',
+            'RB0987654321fedcba0987654321fedcba'
+        ]
+    ]);
+
+    // Delete a profile
+    $client->rbl->profiles->delete('RP9f8e7d6c5b4a3210fedcba0987654321');
+
+} catch(GeneratorLabs\Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+### Manage RBL Sources
+
+```php
+try {
+    // List all sources
+    $sources = $client->rbl->sources->get();
+
+    // Get a specific source
+    $source = $client->rbl->sources->get('RB18c470cc518a09678bb280960dbdd524');
+
+    // Create a custom source
+    $result = $client->rbl->sources->create([
+        'host' => 'custom.rbl.example.com',
+        'type' => 'rbl',
+        'custom_codes' => ['127.0.0.2', '127.0.0.3']
+    ]);
+
+    // Update a source
+    $client->rbl->sources->update('RB18c470cc518a09678bb280960dbdd524', [
+        'host' => 'updated.rbl.example.com',
+        'custom_codes' => ['127.0.0.2', '127.0.0.3']
+    ]);
+
+    // Delete a source
+    $client->rbl->sources->delete('RB18c470cc518a09678bb280960dbdd524');
+
+} catch(GeneratorLabs\Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+## Contact Management
+
 ### Manage Contacts
 
 ```php
@@ -186,13 +293,22 @@ try {
 
     // Create a contact
     $result = $client->contact->contacts->create([
-        'email' => 'admin@example.com',
-        'type' => 'email'
+        'contact' => 'admin@example.com',
+        'type' => 'email',
+        'schedule' => 'every_check',
+        'contact_group' => [
+            'CG4f3e2d1c0b9a8776655443322110fedc',
+            'CG5a6b7c8d9e0f1234567890abcdef1234'
+        ]
     ]);
 
     // Update a contact
     $client->contact->contacts->update('COabcdef1234567890abcdef1234567890', [
-        'email' => 'updated@example.com'
+        'contact' => 'updated@example.com',
+        'contact_group' => [
+            'CG4f3e2d1c0b9a8776655443322110fedc',
+            'CG5a6b7c8d9e0f1234567890abcdef1234'
+        ]
     ]);
 
     // Confirm a contact
@@ -217,8 +333,7 @@ try {
 
     // Create a contact group
     $result = $client->contact->groups->create([
-        'name' => 'Primary Contacts',
-        'contacts' => 'CT123...,CT456...'
+        'name' => 'Primary Contacts'
     ]);
 
     // Update a contact group
@@ -234,11 +349,11 @@ try {
 }
 ```
 
-### Certificate Monitoring
+## Certificate Monitoring
 
 Certificate monitoring allows you to monitor SSL/TLS certificates for expiration, validity, and configuration issues across HTTPS, SMTPS, IMAPS, and other TLS-enabled services.
 
-#### List Certificate Errors
+### List Certificate Errors
 
 ```php
 try {
@@ -255,7 +370,7 @@ try {
 }
 ```
 
-#### Manage Certificate Monitors
+### Manage Certificate Monitors
 
 ```php
 try {
@@ -269,15 +384,19 @@ try {
     $monitor = $client->cert->monitors->create([
         'name' => 'Production Web Server',
         'hostname' => 'example.com',
-        'port' => 443,
         'protocol' => 'https',
-        'cert_profile' => 'CP79b597e61a984a35b5eb7dcdbc3de53c',
-        'contact_group' => 'CG4f3e2d1c0b9a8776655443322110fed'
+        'profile' => 'CP79b597e61a984a35b5eb7dcdbc3de53c',
+        'contact_group' => [
+            'CG4f3e2d1c0b9a8776655443322110fedc',
+            'CG5a6b7c8d9e0f1234567890abcdef1234'
+        ],
+        'tags' => ['production', 'web', 'ssl']
     ]);
 
     // Update a monitor
     $monitor = $client->cert->monitors->update('CM62944aeeee2b46d7a28221164f38976a', [
-        'name' => 'Updated Server Name'
+        'name' => 'Updated Server Name',
+        'tags' => ['production', 'web', 'ssl']
     ]);
 
     // Delete a monitor
@@ -294,7 +413,7 @@ try {
 }
 ```
 
-#### Manage Certificate Profiles
+### Manage Certificate Profiles
 
 ```php
 try {
@@ -307,13 +426,18 @@ try {
     // Create a new profile
     $profile = $client->cert->profiles->create([
         'name' => 'Standard Certificate Profile',
-        'expiration_warning_days' => 30,
-        'expiration_critical_days' => 7
+        'expiration_thresholds' => [30, 14, 7],
+        'alert_on_expiration' => true,
+        'alert_on_name_mismatch' => true,
+        'alert_on_misconfigurations' => true,
+        'alert_on_changes' => true
     ]);
 
     // Update a profile
     $profile = $client->cert->profiles->update('CP79b597e61a984a35b5eb7dcdbc3de53c', [
-        'expiration_warning_days' => 45
+        'expiration_thresholds' => [45, 14, 7],
+        'alert_on_misconfigurations' => true,
+        'alert_on_changes' => true
     ]);
 
     // Delete a profile
@@ -396,7 +520,7 @@ Full API documentation is available at the [Generator Labs Developer Site](https
 
 ## API Structure
 
-The v4.0 API follows a RESTful design with two main resource namespaces:
+The v4.0 API follows a RESTful design with three main resource namespaces:
 
 ### RBL Namespace (`$client->rbl`)
 
@@ -447,7 +571,7 @@ composer test && composer phpstan
 * Added full PHPUnit test coverage
 * Added PHPStan static analysis
 * Added GitHub Actions CI/CD workflow
-* Organized endpoints under `/rbl/` and `/contact/` namespaces
+* Organized endpoints under `/rbl/`, `/contact/`, and `/cert/` namespaces
 * Added support for PUT and DELETE methods
 * Improved error handling for v4.0 response format
 
