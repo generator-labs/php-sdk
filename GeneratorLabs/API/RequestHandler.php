@@ -130,6 +130,15 @@ trait RequestHandler
         try {
             $options = [];
 
+            // Convert array values to comma-separated strings for form encoding
+            if (!is_null($_args)) {
+                foreach ($_args as $key => $value) {
+                    if (is_array($value)) {
+                        $_args[$key] = implode(',', $value);
+                    }
+                }
+            }
+
             // Handle request based on method
             if ($_type === 'GET' && !is_null($_args)) {
                 $options['query'] = $_args;
