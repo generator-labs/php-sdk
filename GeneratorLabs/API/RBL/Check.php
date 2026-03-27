@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 
 final class Check
 {
@@ -28,7 +29,7 @@ final class Check
     //
     // start a new RBL check
     //
-    public function start(array $_data): array
+    public function start(array $_data): Response
     {
         return $this->_post('rbl/check/start', $_data);
     }
@@ -36,7 +37,7 @@ final class Check
     //
     // get the status of an RBL check
     //
-    public function status(string $_id, ?array $_params = null): array
+    public function status(string $_id, ?array $_params = null): Response
     {
         return $this->_get('rbl/check/status/' . $_id, $_params);
     }

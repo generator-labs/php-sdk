@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
 final class Listings
@@ -30,7 +31,7 @@ final class Listings
     //
     // get a list of RBL listings
     //
-    public function get(?array $_settings = null): array
+    public function get(?array $_settings = null): Response
     {
         return $this->_get('rbl/listings', $_settings);
     }

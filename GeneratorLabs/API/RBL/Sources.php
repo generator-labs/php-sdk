@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
 final class Sources
@@ -30,7 +31,7 @@ final class Sources
     //
     // get a list of sources or a single source by id
     //
-    public function get(string|array|null $_id_or_settings = null): array
+    public function get(string|array|null $_id_or_settings = null): Response
     {
         if (is_string($_id_or_settings)) {
             return $this->_get('rbl/sources/' . $_id_or_settings);
@@ -41,7 +42,7 @@ final class Sources
     //
     // create a new source
     //
-    public function create(array $_data): array
+    public function create(array $_data): Response
     {
         return $this->_post('rbl/sources', $_data);
     }
@@ -49,7 +50,7 @@ final class Sources
     //
     // update a source
     //
-    public function update(string $_id, array $_data): array
+    public function update(string $_id, array $_data): Response
     {
         return $this->_put('rbl/sources/' . $_id, $_data);
     }
@@ -57,7 +58,7 @@ final class Sources
     //
     // delete a source by id
     //
-    public function delete(string $_id): array
+    public function delete(string $_id): Response
     {
         return $this->_delete('rbl/sources/' . $_id);
     }
@@ -65,7 +66,7 @@ final class Sources
     //
     // pause a source by id
     //
-    public function pause(string $_id): array
+    public function pause(string $_id): Response
     {
         return $this->_post('rbl/sources/' . $_id . '/pause');
     }
@@ -73,7 +74,7 @@ final class Sources
     //
     // resume (un-pause) a source by id
     //
-    public function resume(string $_id): array
+    public function resume(string $_id): Response
     {
         return $this->_post('rbl/sources/' . $_id . '/resume');
     }

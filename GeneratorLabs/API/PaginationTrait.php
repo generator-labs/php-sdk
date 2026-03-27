@@ -11,6 +11,8 @@
 
 namespace GeneratorLabs\API;
 
+use GeneratorLabs\Response;
+
 trait PaginationTrait
 {
     //
@@ -48,7 +50,7 @@ trait PaginationTrait
     //
     // Extract items from response - override in child class if needed
     //
-    protected function extractItems(array $_response): array
+    protected function extractItems(Response|array $_response): array
     {
         // Default implementation - tries common patterns
         $resourceName = $this->getResourceName();

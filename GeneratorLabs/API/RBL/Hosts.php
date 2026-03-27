@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\RBL;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
 final class Hosts
@@ -30,7 +31,7 @@ final class Hosts
     //
     // get a list of hosts, or a single host by id
     //
-    public function get(string|array|null $_id_or_settings = null): array
+    public function get(string|array|null $_id_or_settings = null): Response
     {
         // If string, it's an ID for a single host
         if (is_string($_id_or_settings))
@@ -45,7 +46,7 @@ final class Hosts
     //
     // create a new host
     //
-    public function create(array $_data): array
+    public function create(array $_data): Response
     {
         return $this->_post('rbl/hosts', $_data);
     }
@@ -53,7 +54,7 @@ final class Hosts
     //
     // update a host
     //
-    public function update(string $_id, array $_data): array
+    public function update(string $_id, array $_data): Response
     {
         return $this->_put('rbl/hosts/' . $_id, $_data);
     }
@@ -61,7 +62,7 @@ final class Hosts
     //
     // delete a host by id
     //
-    public function delete(string $_id): array
+    public function delete(string $_id): Response
     {
         return $this->_delete('rbl/hosts/' . $_id);
     }
@@ -69,7 +70,7 @@ final class Hosts
     //
     // pause a host by id
     //
-    public function pause(string $_id): array
+    public function pause(string $_id): Response
     {
         return $this->_post('rbl/hosts/' . $_id . '/pause');
     }
@@ -77,7 +78,7 @@ final class Hosts
     //
     // resume (un-pause) a host by id
     //
-    public function resume(string $_id): array
+    public function resume(string $_id): Response
     {
         return $this->_post('rbl/hosts/' . $_id . '/resume');
     }

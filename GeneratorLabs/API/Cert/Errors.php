@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\Cert;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
 final class Errors
@@ -30,7 +31,7 @@ final class Errors
     //
     // get certificate errors (read-only)
     //
-    public function get(?array $_settings = null): array
+    public function get(?array $_settings = null): Response
     {
         return $this->_get('cert/errors', $_settings);
     }

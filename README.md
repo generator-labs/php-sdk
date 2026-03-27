@@ -33,6 +33,7 @@ The official PHP SDK for the [Generator Labs](https://generatorlabs.com) API v4.
   - [Manage Certificate Profiles](#manage-certificate-profiles)
 - [Pagination](#pagination)
 - [Webhook Verification](#webhook-verification)
+- [Rate Limiting](#rate-limiting)
 - [API Structure](#api-structure)
 - [Development](#development)
 - [Release History](#release-history)
@@ -43,7 +44,7 @@ The official PHP SDK for the [Generator Labs](https://generatorlabs.com) API v4.
 ## Features
 
 - Full support for Generator Labs API v4.0
-- Automatic retry logic with exponential backoff (configurable)
+- Automatic retry logic with exponential backoff and `Retry-After` header support
 - Configurable timeouts and retry behavior
 - Automatic pagination support for large result sets
 - RESTful endpoint design with proper HTTP verbs (GET, POST, PUT, DELETE)
@@ -518,6 +519,36 @@ See `examples/webhook-verification.php` for a complete example.
 
 Full API documentation is available at the [Generator Labs Developer Site](https://docs.generatorlabs.com/api/v4/).
 
+## Rate Limiting
+
+The API enforces two layers of rate limiting:
+
+- **Hourly limit**: 1,000 requests per hour per application
+- **Per-second limit**: varies by endpoint — 100 RPS for read operations, 50 RPS for write operations, and 20 RPS for manual check start
+
+When a rate limit is exceeded, the API returns HTTP 429 with a `Retry-After` header indicating how many seconds to wait. The SDK automatically respects this header during retries, falling back to exponential backoff for other retryable errors.
+
+All API responses include IETF draft rate limit headers, accessible via the `rate_limit` property on every response:
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `RateLimit-Limit` | Active rate limit policies | `1000;w=3600, 100;w=1` |
+| `RateLimit-Remaining` | Requests remaining in the most restrictive window | `95` |
+| `RateLimit-Reset` | Seconds until the most restrictive window resets | `1` |
+
+```php
+$response = $client->rbl->hosts->get();
+
+// Access response data (bracket notation works as before)
+$hosts = $response['data'];
+
+// Access rate limit info
+if ($response->rate_limit !== null) {
+    echo "Remaining: " . $response->rate_limit->remaining . "\n";
+    echo "Reset: " . $response->rate_limit->reset . "s\n";
+}
+```
+
 ## API Structure
 
 The v4.0 API follows a RESTful design with three main resource namespaces:
@@ -574,6 +605,11 @@ composer test && composer phpstan
 * Organized endpoints under `/rbl/`, `/contact/`, and `/cert/` namespaces
 * Added support for PUT and DELETE methods
 * Improved error handling for v4.0 response format
+* Automatic `Retry-After` header support on 429 rate limit responses
+* `Response` wrapper (ArrayAccess) exposes per-request rate limit info (`rate_limit`)
+* Added `RateLimitInfo` class with `limit`, `remaining`, and `reset` properties
+* Webhook signature verification with HMAC-SHA256 and constant-time comparison
+* Automatic pagination via `getAll()` for large result sets
 
 ### v1.1.0
 * Updated to use the new API endpoint URL

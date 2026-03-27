@@ -12,6 +12,7 @@
 namespace GeneratorLabs\API\Contact;
 
 use GeneratorLabs\API\RequestHandler;
+use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
 final class Contacts
@@ -30,7 +31,7 @@ final class Contacts
     //
     // get a list of contacts or a single contact by id
     //
-    public function get(string|array|null $_id_or_settings = null): array
+    public function get(string|array|null $_id_or_settings = null): Response
     {
         if (is_string($_id_or_settings)) {
             return $this->_get('contact/contacts/' . $_id_or_settings);
@@ -41,7 +42,7 @@ final class Contacts
     //
     // create a new contact
     //
-    public function create(array $_data): array
+    public function create(array $_data): Response
     {
         return $this->_post('contact/contacts', $_data);
     }
@@ -49,7 +50,7 @@ final class Contacts
     //
     // update a contact
     //
-    public function update(string $_id, array $_data): array
+    public function update(string $_id, array $_data): Response
     {
         return $this->_put('contact/contacts/' . $_id, $_data);
     }
@@ -57,7 +58,7 @@ final class Contacts
     //
     // delete a contact by id
     //
-    public function delete(string $_id): array
+    public function delete(string $_id): Response
     {
         return $this->_delete('contact/contacts/' . $_id);
     }
@@ -65,7 +66,7 @@ final class Contacts
     //
     // pause a contact by id
     //
-    public function pause(string $_id): array
+    public function pause(string $_id): Response
     {
         return $this->_post('contact/contacts/' . $_id . '/pause');
     }
@@ -73,7 +74,7 @@ final class Contacts
     //
     // resume (un-pause) a contact by id
     //
-    public function resume(string $_id): array
+    public function resume(string $_id): Response
     {
         return $this->_post('contact/contacts/' . $_id . '/resume');
     }
@@ -81,7 +82,7 @@ final class Contacts
     //
     // confirm a contact by id
     //
-    public function confirm(string $_id, array $_data): array
+    public function confirm(string $_id, array $_data): Response
     {
         return $this->_post('contact/contacts/' . $_id . '/confirm', $_data);
     }
@@ -89,7 +90,7 @@ final class Contacts
     //
     // resend authorization code for a contact by id
     //
-    public function resend(string $_id): array
+    public function resend(string $_id): Response
     {
         return $this->_post('contact/contacts/' . $_id . '/resend');
     }
