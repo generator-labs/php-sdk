@@ -594,6 +594,9 @@ composer test && composer phpstan
 
 ## Release History
 
+### v2.0.1 (2026-06-19)
+* Error detection now reads the API `status_code` and `status_message`; any `status_code` (or HTTP status) of 400 or greater throws `Exception` with the API message and the code via `getCode()`
+
 ### v2.0.0 (2026-01-31)
 * Complete rewrite for Generator Labs API v4.0
 * RESTful endpoint design with proper HTTP verbs
