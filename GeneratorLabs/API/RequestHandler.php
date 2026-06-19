@@ -174,17 +174,13 @@ trait RequestHandler
                 throw new Exception('Failed to decode JSON response from Generator Labs API');
             }
 
-            // Check for API errors (v4.0 format)
-            if (isset($data['success']) && $data['success'] === false) {
-                $message = $data['error']['message'] ?? $data['message'] ?? 'Unknown error';
-                throw new Exception('Generator Labs API error: ' . $message);
-            }
-
-            // Check HTTP status code
+            // Determine success vs failure from the API status_code (which mirrors the HTTP status),
+            // and surface the API status_message.
             $statusCode = $response->getStatusCode();
-            if ($statusCode >= 400) {
-                $message = $data['error']['message'] ?? $data['message'] ?? "HTTP {$statusCode} error";
-                throw new Exception('Generator Labs API error: ' . $message);
+            $apiCode = isset($data['status_code']) ? (int) $data['status_code'] : $statusCode;
+            if ($apiCode >= 400 || $statusCode >= 400) {
+                $message = $data['status_message'] ?? "HTTP {$statusCode} error";
+                throw new Exception('Generator Labs API error: ' . $message, $apiCode);
             }
 
             //
@@ -208,10 +204,8 @@ trait RequestHandler
                 $response = $e->getResponse();
                 $body = (string) $response->getBody();
                 $data = json_decode($body, true);
-                if ($data && isset($data['error']['message'])) {
-                    $message = $data['error']['message'];
-                } elseif ($data && isset($data['message'])) {
-                    $message = $data['message'];
+                if ($data && isset($data['status_message'])) {
+                    $message = $data['status_message'];
                 }
             }
             throw new Exception('Generator Labs API request failed: ' . $message);

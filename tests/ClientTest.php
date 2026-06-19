@@ -107,6 +107,6 @@ final class ClientTest extends TestCase
 
     public function testVersionConstant(): void
     {
-        $this->assertEquals('2.0.0', Client::VERSION);
+        $this->assertEquals('2.0.1', Client::VERSION);
     }
 }

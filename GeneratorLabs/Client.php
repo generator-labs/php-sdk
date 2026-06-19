@@ -51,7 +51,7 @@ final class Client
     /**
      * PHP SDK version
      */
-    public const VERSION = '2.0.0';
+    public const VERSION = '2.0.1';
 
     /**
      * Account SID (2 uppercase + 32 lowercase hex characters)

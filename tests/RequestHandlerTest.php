@@ -3,6 +3,7 @@
 namespace GeneratorLabs\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use GeneratorLabs\Client;
 
 final class RequestHandlerTest extends TestCase
@@ -108,5 +109,46 @@ final class RequestHandlerTest extends TestCase
             'CG11111111111111111111111111111111',
             $params['contact_group']
         );
+    }
+
+    #[DataProvider('errorResponseProvider')]
+    public function testErrorResponseThrowsWithStatusMessageAndCode(int $status, string $message): void
+    {
+        $mock = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Psr7\Response($status, [], json_encode([
+                'status_code' => $status,
+                'status_message' => $message,
+            ]))
+        ]);
+        $handlerStack = \GuzzleHttp\HandlerStack::create($mock);
+
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+        $hosts = $client->rbl->hosts;
+
+        $reflection = new \ReflectionClass($hosts);
+        $prop = $reflection->getProperty('http_client');
+        $prop->setValue($hosts, new \GuzzleHttp\Client([
+            'handler' => $handlerStack,
+            'base_uri' => 'https://api.generatorlabs.com/4.0/',
+            'http_errors' => false,
+        ]));
+
+        try {
+            $hosts->create(['name' => 'Test Host', 'host' => '1.2.3.4']);
+            $this->fail('Expected GeneratorLabs\\Exception was not thrown');
+        } catch (\GeneratorLabs\Exception $e) {
+            $this->assertStringContainsString($message, $e->getMessage());
+            $this->assertSame($status, $e->getCode());
+        }
+    }
+
+    public static function errorResponseProvider(): array
+    {
+        return [
+            'bad request' => [400, 'Invalid host id provided.'],
+            'not found' => [404, 'Not found.'],
+            'validation' => [422, 'Validation failed.'],
+            'server error' => [500, 'Server error.'],
+        ];
     }
 }
