@@ -38,6 +38,6 @@
     },
     "scripts": {
         "test": "phpunit",
-        "phpstan": "phpstan analyse GeneratorLabs --level=5"
+        "phpstan": "phpstan analyse"
     }
 }

@@ -18,6 +18,7 @@ final class Cert
     private \GeneratorLabs\Client $m_client;
 
     private ?Cert\Errors $errors = null;
+    private ?Cert\Findings $findings = null;
     private ?Cert\Monitors $monitors = null;
     private ?Cert\Profiles $profiles = null;
 
@@ -36,6 +37,7 @@ final class Cert
     {
         return match ($_name) {
             'errors' => $this->errors ?? ($this->errors = new Cert\Errors($this->m_client)),
+            'findings' => $this->findings ?? ($this->findings = new Cert\Findings($this->m_client)),
             'monitors' => $this->monitors ?? ($this->monitors = new Cert\Monitors($this->m_client)),
             'profiles' => $this->profiles ?? ($this->profiles = new Cert\Profiles($this->m_client)),
             default => throw new Exception('invalid Cert endpoint ' . $_name),

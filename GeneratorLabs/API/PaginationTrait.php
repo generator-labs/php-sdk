@@ -18,6 +18,10 @@ trait PaginationTrait
     //
     // Get all items with automatic pagination
     //
+    /**
+     * @param array<string, mixed> $_params
+     * @return array<int, mixed>
+     */
     public function getAll(array $_params = []): array
     {
         $allItems = [];
@@ -50,6 +54,10 @@ trait PaginationTrait
     //
     // Extract items from response - override in child class if needed
     //
+    /**
+     * @param Response|array<string, mixed> $_response
+     * @return array<int, mixed>
+     */
     protected function extractItems(Response|array $_response): array
     {
         // Default implementation - tries common patterns

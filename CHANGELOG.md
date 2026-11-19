@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Added
+- `$client->account`: `get`, `balance`, `usage`, `pauseChecks` and `resumeChecks`.
+- `$client->cert->findings`: `get`, `getAll`, `dismiss` and `restore`.
+- `$client->cert->monitors->check($id)` queues a check now, and `$client->cert->errors->count()`
+  returns the number of current certificate errors.
+- Request options as the last argument of every method: `idempotency_key`, `request_id`,
+  `if_none_match` and `fields`.
+- An `Idempotency-Key` is sent automatically on requests that create something or start a check
+  (creates, contact resend and confirm, certificate monitor delete, RBL check start, certificate
+  check now). It is generated once per call and reused on every retry, so a retried request is not
+  applied twice. A key you pass yourself is used instead.
+- `Response` exposes `request_id`, `etag`, `replayed` and `not_modified`, and `Exception` carries
+  the `request_id`. A 304 answer to `if_none_match` is a normal response with `not_modified` set.
+- Array types on every method and property. The SDK now passes PHPStan at level 9, and the
+  request options are described by the `RequestOptions` type on `GeneratorLabs\Client`.
+
+### Changed
+- A `Retry-After` longer than 60 seconds (`Client::MAX_RETRY_AFTER`) is not waited out: the 429 is
+  thrown as the error.
+
+### Fixed
+- A response or webhook payload that is valid JSON but not an object now throws the SDK
+  `Exception`, not a `TypeError`.
+- `Client::curl_opts()` called with no argument threw a `TypeError`; it now clears the options.
+
 ## [2.0.1]
 
 ### Changed

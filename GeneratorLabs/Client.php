@@ -45,13 +45,32 @@ spl_autoload_register('GeneratorLabs\Client::autoload');
  * ];
  * $client = new GeneratorLabs\Client('your_account_sid', 'your_auth_token', $config);
  * ```
+ *
+ * @phpstan-type RequestOptions array{idempotency_key?: string, request_id?: string, if_none_match?: string, fields?: string|list<string>}
  */
 final class Client
 {
     /**
      * PHP SDK version
      */
-    public const VERSION = '2.0.1';
+    public const VERSION = '2.1.0';
+
+    /**
+     * The longest Retry-After (in seconds) that is waited out before a retry. A longer wait
+     * is not slept: the response is returned as the error instead.
+     */
+    public const MAX_RETRY_AFTER = 60;
+
+    /**
+     * The options any request accepts, as the last argument of a resource method:
+     * - idempotency_key: the Idempotency-Key of a request that creates something or starts a
+     *   check; a repeat with the same key returns the first answer (generated when left out)
+     * - request_id: the X-Request-Id to send (the API generates one otherwise)
+     * - if_none_match: the ETag of an earlier response; the answer is not_modified when
+     *   nothing changed
+     * - fields: the keys to keep in each object of the response data (GET requests)
+     */
+    public const REQUEST_OPTIONS = ['idempotency_key', 'request_id', 'if_none_match', 'fields'];
 
     /**
      * Account SID (2 uppercase + 32 lowercase hex characters)
@@ -71,7 +90,7 @@ final class Client
     /**
      * Configuration options for timeouts and retries
      *
-     * @var array{timeout: float, connect_timeout: float, max_retries: int, retry_backoff: int}
+     * @var array{timeout: float, connect_timeout: float, max_retries: int, retry_backoff: int|float, base_url?: string}
      */
     private array $m_config = [
         'timeout' => 30.0,
@@ -84,8 +103,14 @@ final class Client
      * Additional CURL options (deprecated - use config instead)
      *
      * @deprecated Use $m_config array instead
+     * @var array<int|string, mixed>
      */
     public array $m_curl_opts = [];
+
+    /**
+     * Account API namespace
+     */
+    private ?API\Account $account = null;
 
     /**
      * RBL monitoring API namespace
@@ -112,7 +137,7 @@ final class Client
      *
      * @param string $_account_sid Your Generator Labs account SID
      * @param string $_api_token Your Generator Labs auth token
-     * @param array $_config Optional configuration array with keys:
+     * @param array{timeout?: float, connect_timeout?: float, max_retries?: int, retry_backoff?: int|float, base_url?: string} $_config Optional configuration array with keys:
      *                       - timeout: Request timeout in seconds (default: 30.0)
      *                       - connect_timeout: Connection timeout in seconds (default: 5.0)
      *                       - max_retries: Maximum retry attempts (default: 3)
@@ -237,18 +262,19 @@ final class Client
      * Set additional CURL options.
      *
      * @deprecated Use config array in constructor instead
-     * @param array|null $_opts CURL options array
+     * @param array<int|string, mixed>|null $_opts CURL options array
      * @return void
      */
     public function curl_opts(?array $_opts = null): void
     {
-        $this->m_curl_opts = $_opts;
+        $this->m_curl_opts = $_opts ?? [];
     }
 
     /**
      * Magic getter for API resource namespaces.
      *
      * Provides lazy-loaded access to:
+     * - $client->account: the account, its balance, usage and scheduled checks
      * - $client->rbl: RBL monitoring operations (hosts, profiles, sources, etc.)
      * - $client->contact: Contact management operations (contacts, groups)
      * - $client->cert: Certificate monitoring operations (monitors, profiles, errors)
@@ -260,13 +286,14 @@ final class Client
      * $contacts = $client->contact->contacts()->get();
      * ```
      *
-     * @param string $_name Resource name ('rbl', 'contact', or 'cert')
-     * @return API\RBL|API\Contact|API\Cert Resource namespace instance
+     * @param string $_name Resource name ('account', 'rbl', 'contact', or 'cert')
+     * @return API\Account|API\RBL|API\Contact|API\Cert Resource namespace instance
      * @throws Exception if resource name is invalid
      */
     public function __get(string $_name): mixed
     {
         return match ($_name) {
+            'account' => $this->account ?? ($this->account = new API\Account($this)),
             'rbl' => $this->rbl ?? ($this->rbl = new API\RBL($this)),
             'contact' => $this->contact ?? ($this->contact = new API\Contact($this)),
             'cert' => $this->cert ?? ($this->cert = new API\Cert($this)),

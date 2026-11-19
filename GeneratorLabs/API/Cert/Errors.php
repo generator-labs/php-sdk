@@ -15,6 +15,9 @@ use GeneratorLabs\API\RequestHandler;
 use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
+/**
+ * @phpstan-import-type RequestOptions from \GeneratorLabs\Client
+ */
 final class Errors
 {
     use RequestHandler;
@@ -31,9 +34,22 @@ final class Errors
     //
     // get certificate errors (read-only)
     //
-    public function get(?array $_settings = null): Response
+    /**
+     * @param array<string, mixed>|null $_settings
+     * @param RequestOptions $_options
+     */
+    public function get(?array $_settings = null, array $_options = []): Response
     {
-        return $this->_get('cert/errors', $_settings);
+        return $this->_get('cert/errors', $_settings, $_options);
+    }
+
+    //
+    // get the number of current certificate warnings and errors
+    //
+    /** @param RequestOptions $_options */
+    public function count(array $_options = []): int
+    {
+        return (int) $this->_getPlain('cert/errors/count', $_options);
     }
 
     //

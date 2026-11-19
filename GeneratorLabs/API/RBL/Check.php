@@ -14,6 +14,9 @@ namespace GeneratorLabs\API\RBL;
 use GeneratorLabs\API\RequestHandler;
 use GeneratorLabs\Response;
 
+/**
+ * @phpstan-import-type RequestOptions from \GeneratorLabs\Client
+ */
 final class Check
 {
     use RequestHandler;
@@ -29,16 +32,24 @@ final class Check
     //
     // start a new RBL check
     //
-    public function start(array $_data): Response
+    /**
+     * @param array<string, mixed> $_data
+     * @param RequestOptions $_options
+     */
+    public function start(array $_data, array $_options = []): Response
     {
-        return $this->_post('rbl/check/start', $_data);
+        return $this->_post('rbl/check/start', $_data, $_options, true);
     }
 
     //
     // get the status of an RBL check
     //
-    public function status(string $_id, ?array $_params = null): Response
+    /**
+     * @param array<string, mixed>|null $_params
+     * @param RequestOptions $_options
+     */
+    public function status(string $_id, ?array $_params = null, array $_options = []): Response
     {
-        return $this->_get('rbl/check/status/' . $_id, $_params);
+        return $this->_get('rbl/check/status/' . $_id, $_params, $_options);
     }
 }

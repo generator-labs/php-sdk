@@ -38,7 +38,6 @@ final class RequestHandlerTest extends TestCase
 
         $reflection = new \ReflectionClass($hosts);
         $prop = $reflection->getProperty('http_client');
-        $prop->setAccessible(true);
         $prop->setValue($hosts, new \GuzzleHttp\Client([
             'handler' => $handlerStack,
             'base_uri' => 'https://api.generatorlabs.com/4.0/',
@@ -88,7 +87,6 @@ final class RequestHandlerTest extends TestCase
 
         $reflection = new \ReflectionClass($hosts);
         $prop = $reflection->getProperty('http_client');
-        $prop->setAccessible(true);
         $prop->setValue($hosts, new \GuzzleHttp\Client([
             'handler' => $handlerStack,
             'base_uri' => 'https://api.generatorlabs.com/4.0/',

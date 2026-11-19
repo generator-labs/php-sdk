@@ -15,6 +15,9 @@ use GeneratorLabs\API\RequestHandler;
 use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
+/**
+ * @phpstan-import-type RequestOptions from \GeneratorLabs\Client
+ */
 final class Groups
 {
     use RequestHandler;
@@ -31,36 +34,49 @@ final class Groups
     //
     // get a list of contact groups or a single contact group by id
     //
-    public function get(string|array|null $_id_or_settings = null): Response
+    /**
+     * @param string|array<string, mixed>|null $_id_or_settings
+     * @param RequestOptions $_options
+     */
+    public function get(string|array|null $_id_or_settings = null, array $_options = []): Response
     {
         if (is_string($_id_or_settings)) {
-            return $this->_get('contact/groups/' . $_id_or_settings);
+            return $this->_get('contact/groups/' . $_id_or_settings, null, $_options);
         }
-        return $this->_get('contact/groups', $_id_or_settings);
+        return $this->_get('contact/groups', $_id_or_settings, $_options);
     }
 
     //
     // create a new contact group
     //
-    public function create(array $_data): Response
+    /**
+     * @param array<string, mixed> $_data
+     * @param RequestOptions $_options
+     */
+    public function create(array $_data, array $_options = []): Response
     {
-        return $this->_post('contact/groups', $_data);
+        return $this->_post('contact/groups', $_data, $_options, true);
     }
 
     //
     // update a contact group
     //
-    public function update(string $_id, array $_data): Response
+    /**
+     * @param array<string, mixed> $_data
+     * @param RequestOptions $_options
+     */
+    public function update(string $_id, array $_data, array $_options = []): Response
     {
-        return $this->_put('contact/groups/' . $_id, $_data);
+        return $this->_put('contact/groups/' . $_id, $_data, $_options);
     }
 
     //
     // delete a contact group by id
     //
-    public function delete(string $_id): Response
+    /** @param RequestOptions $_options */
+    public function delete(string $_id, array $_options = []): Response
     {
-        return $this->_delete('contact/groups/' . $_id);
+        return $this->_delete('contact/groups/' . $_id, null, $_options);
     }
 
     //

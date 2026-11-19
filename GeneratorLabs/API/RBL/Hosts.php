@@ -15,6 +15,9 @@ use GeneratorLabs\API\RequestHandler;
 use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
+/**
+ * @phpstan-import-type RequestOptions from \GeneratorLabs\Client
+ */
 final class Hosts
 {
     use RequestHandler;
@@ -31,56 +34,71 @@ final class Hosts
     //
     // get a list of hosts, or a single host by id
     //
-    public function get(string|array|null $_id_or_settings = null): Response
+    /**
+     * @param string|array<string, mixed>|null $_id_or_settings
+     * @param RequestOptions $_options
+     */
+    public function get(string|array|null $_id_or_settings = null, array $_options = []): Response
     {
         // If string, it's an ID for a single host
         if (is_string($_id_or_settings))
         {
-            return $this->_get('rbl/hosts/' . $_id_or_settings);
+            return $this->_get('rbl/hosts/' . $_id_or_settings, null, $_options);
         }
 
         // Otherwise, it's query parameters for listing
-        return $this->_get('rbl/hosts', $_id_or_settings);
+        return $this->_get('rbl/hosts', $_id_or_settings, $_options);
     }
 
     //
     // create a new host
     //
-    public function create(array $_data): Response
+    /**
+     * @param array<string, mixed> $_data
+     * @param RequestOptions $_options
+     */
+    public function create(array $_data, array $_options = []): Response
     {
-        return $this->_post('rbl/hosts', $_data);
+        return $this->_post('rbl/hosts', $_data, $_options, true);
     }
 
     //
     // update a host
     //
-    public function update(string $_id, array $_data): Response
+    /**
+     * @param array<string, mixed> $_data
+     * @param RequestOptions $_options
+     */
+    public function update(string $_id, array $_data, array $_options = []): Response
     {
-        return $this->_put('rbl/hosts/' . $_id, $_data);
+        return $this->_put('rbl/hosts/' . $_id, $_data, $_options);
     }
 
     //
     // delete a host by id
     //
-    public function delete(string $_id): Response
+    /** @param RequestOptions $_options */
+    public function delete(string $_id, array $_options = []): Response
     {
-        return $this->_delete('rbl/hosts/' . $_id);
+        return $this->_delete('rbl/hosts/' . $_id, null, $_options);
     }
 
     //
     // pause a host by id
     //
-    public function pause(string $_id): Response
+    /** @param RequestOptions $_options */
+    public function pause(string $_id, array $_options = []): Response
     {
-        return $this->_post('rbl/hosts/' . $_id . '/pause');
+        return $this->_post('rbl/hosts/' . $_id . '/pause', null, $_options);
     }
 
     //
     // resume (un-pause) a host by id
     //
-    public function resume(string $_id): Response
+    /** @param RequestOptions $_options */
+    public function resume(string $_id, array $_options = []): Response
     {
-        return $this->_post('rbl/hosts/' . $_id . '/resume');
+        return $this->_post('rbl/hosts/' . $_id . '/resume', null, $_options);
     }
 
     //

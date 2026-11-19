@@ -15,6 +15,9 @@ use GeneratorLabs\API\RequestHandler;
 use GeneratorLabs\Response;
 use GeneratorLabs\API\PaginationTrait;
 
+/**
+ * @phpstan-import-type RequestOptions from \GeneratorLabs\Client
+ */
 final class Listings
 {
     use RequestHandler;
@@ -31,9 +34,13 @@ final class Listings
     //
     // get a list of RBL listings
     //
-    public function get(?array $_settings = null): Response
+    /**
+     * @param array<string, mixed>|null $_settings
+     * @param RequestOptions $_options
+     */
+    public function get(?array $_settings = null, array $_options = []): Response
     {
-        return $this->_get('rbl/listings', $_settings);
+        return $this->_get('rbl/listings', $_settings, $_options);
     }
 
     //

@@ -41,7 +41,7 @@ final class Webhook
      * @param string $_header The X-Webhook-Signature header value
      * @param string $_secret Your webhook's signing secret
      * @param int $_tolerance Maximum age of the request in seconds (0 to disable)
-     * @return array The decoded JSON payload
+     * @return array<string, mixed> The decoded JSON payload
      * @throws Exception if verification fails
      */
     public static function verify(string $_body, string $_header, string $_secret, int $_tolerance = self::DEFAULT_TOLERANCE): array
@@ -91,7 +91,7 @@ final class Webhook
         // decode and return the payload
         //
         $payload = json_decode($_body, true);
-        if (is_null($payload))
+        if (is_array($payload) == false)
         {
             throw new Exception('failed to decode webhook JSON payload.');
         }

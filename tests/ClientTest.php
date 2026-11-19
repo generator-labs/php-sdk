@@ -105,8 +105,18 @@ final class ClientTest extends TestCase
         $client->invalid_resource;
     }
 
+    public function testCurlOptsWithNoArgumentClearsTheOptions(): void
+    {
+        $client = new Client($this->validAccountSid, $this->validAuthToken);
+
+        $client->curl_opts([CURLOPT_VERBOSE => true]);
+        $client->curl_opts();
+
+        $this->assertSame([], $client->m_curl_opts);
+    }
+
     public function testVersionConstant(): void
     {
-        $this->assertEquals('2.0.1', Client::VERSION);
+        $this->assertEquals('2.1.0', Client::VERSION);
     }
 }
